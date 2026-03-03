@@ -1,9 +1,14 @@
 const {Router}=require('express');
+const authController=require('../controllers/auth.controller');
 
 const authRouter=Router();
-// require all the routes here
-const authRouter = require('./rotes/auth.routes');
 
-app.use('./api/auth', authRouter);
+/**
+ * @route POST api/auth/register
+ * @desc Register a user
+ * @access Public
+ */
+authRouter.post('/register',authController.registerUserController);
+
 
 module.exports=authRouter;
