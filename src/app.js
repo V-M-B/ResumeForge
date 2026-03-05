@@ -7,10 +7,10 @@ app.use(express.json());
 
 
 // require all the routes here
-const authRouter = require('./rotes/auth.routes');
+const authRouter = require('./route/auth.routes');
 
 
 // using all the routes here 
-app.use('./api/auth', authRouter);
+app.use('/api/auth', authRouter);
 
 module.exports = app;
