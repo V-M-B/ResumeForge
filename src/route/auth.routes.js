@@ -11,4 +11,13 @@ const authRouter=Router();
 authRouter.post('/register',authController.registerUserController);
 
 
+
+/**
+ * @route POST api/auth/login
+ * @desc Login  user with email and password 
+ * @access Public
+ */
+authRouter.post('/login',authController.registerUserController);
+
+
 module.exports=authRouter;
