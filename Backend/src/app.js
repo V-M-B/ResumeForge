@@ -1,8 +1,10 @@
 const express = require('express');
-
+const cookieParser = require('cookie-parser');
 const app = express();
 
 app.use(express.json());
+// populate req.cookies
+app.use(cookieParser());
 
 
 
