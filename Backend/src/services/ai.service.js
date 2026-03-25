@@ -1,58 +1,112 @@
 const { GoogleGenAI } = require("@google/genai")
-const { z } = require("zod")
-const { zodToJsonSchema } = require("zod-to-json-schema")
 const puppeteer = require("puppeteer")
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.GOOGLE_GENAI_API_KEY
+    apiKey: process.env.GOOGLE_API_KEY
 })
 
-
-const interviewReportSchema = z.object({
-    matchScore: z.number().describe("A score between 0 and 100 indicating how well the candidate's profile matches the job describe"),
-    technicalQuestions: z.array(z.object({
-        question: z.string().describe("The technical question can be asked in the interview"),
-        intention: z.string().describe("The intention of interviewer behind asking this question"),
-        answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
-    })).describe("Technical questions that can be asked in the interview along with their intention and how to answer them"),
-    behavioralQuestions: z.array(z.object({
-        question: z.string().describe("The technical question can be asked in the interview"),
-        intention: z.string().describe("The intention of interviewer behind asking this question"),
-        answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
-    })).describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
-    skillGaps: z.array(z.object({
-        skill: z.string().describe("The skill which the candidate is lacking"),
-        severity: z.enum([ "low", "medium", "high" ]).describe("The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances")
-    })).describe("List of skill gaps in the candidate's profile along with their severity"),
-    preparationPlan: z.array(z.object({
-        day: z.number().describe("The day number in the preparation plan, starting from 1"),
-        focus: z.string().describe("The main focus of this day in the preparation plan, e.g. data structures, system design, mock interviews etc."),
-        tasks: z.array(z.string()).describe("List of tasks to be done on this day to follow the preparation plan, e.g. read a specific book or article, solve a set of problems, watch a video etc.")
-    })).describe("A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively"),
-    title: z.string().describe("The title of the job for which the interview report is generated"),
-})
+// Hand-written JSON schema for Gemini's responseSchema
+// zodToJsonSchema was producing an empty schema, causing Gemini to ignore it
+const interviewReportJsonSchema = {
+    type: "object",
+    properties: {
+        title: {
+            type: "string",
+            description: "The title of the job for which the interview report is generated"
+        },
+        matchScore: {
+            type: "number",
+            description: "A score between 0 and 100 indicating how well the candidate's profile matches the job description"
+        },
+        technicalQuestions: {
+            type: "array",
+            description: "Technical questions that can be asked in the interview",
+            items: {
+                type: "object",
+                properties: {
+                    question: { type: "string", description: "The technical question" },
+                    intention: { type: "string", description: "The intention of the interviewer behind asking this question" },
+                    answer: { type: "string", description: "How to answer this question, what points to cover" }
+                },
+                required: ["question", "intention", "answer"]
+            }
+        },
+        behavioralQuestions: {
+            type: "array",
+            description: "Behavioral questions that can be asked in the interview",
+            items: {
+                type: "object",
+                properties: {
+                    question: { type: "string", description: "The behavioral question" },
+                    intention: { type: "string", description: "The intention of the interviewer behind asking this question" },
+                    answer: { type: "string", description: "How to answer this question, what points to cover" }
+                },
+                required: ["question", "intention", "answer"]
+            }
+        },
+        skillGaps: {
+            type: "array",
+            description: "List of skill gaps in the candidate's profile",
+            items: {
+                type: "object",
+                properties: {
+                    skill: { type: "string", description: "The skill the candidate is lacking" },
+                    severity: { type: "string", enum: ["low", "medium", "high"], description: "How important is this skill gap" }
+                },
+                required: ["skill", "severity"]
+            }
+        },
+        preparationPlan: {
+            type: "array",
+            description: "A day-wise preparation plan for the candidate",
+            items: {
+                type: "object",
+                properties: {
+                    day: { type: "number", description: "The day number, starting from 1" },
+                    focus: { type: "string", description: "The main focus of this day" },
+                    tasks: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "Tasks to do on this day"
+                    }
+                },
+                required: ["day", "focus", "tasks"]
+            }
+        }
+    },
+    required: ["title", "matchScore", "technicalQuestions", "behavioralQuestions", "skillGaps", "preparationPlan"]
+}
 
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
+    const prompt = `Generate a comprehensive interview preparation report for a candidate.
+Resume: ${resume}
+Self Description: ${selfDescription}
+Job Description: ${jobDescription}
 
-    const prompt = `Generate an interview report for a candidate with the following details:
-                        Resume: ${resume}
-                        Self Description: ${selfDescription}
-                        Job Description: ${jobDescription}
-`
+Please provide:
+- A job title
+- A match score (0-100)
+- At least 5 technical questions with intention and model answers
+- At least 3 behavioral questions with intention and model answers
+- Skill gaps with severity levels
+- A 7-day preparation plan with daily tasks`
 
     const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(interviewReportSchema),
+            responseSchema: interviewReportJsonSchema,
         }
     })
 
-    return JSON.parse(response.text)
+    let parsed = JSON.parse(response.text)
+    if (Array.isArray(parsed)) {
+        parsed = parsed[0]
+    }
 
-
+    return parsed
 }
 
 
@@ -78,9 +132,16 @@ async function generatePdfFromHtml(htmlContent) {
 
 async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
-    const resumePdfSchema = z.object({
-        html: z.string().describe("The HTML content of the resume which can be converted to PDF using any library like puppeteer")
-    })
+    const resumePdfSchema = {
+        type: "object",
+        properties: {
+            html: {
+                type: "string",
+                description: "The HTML content of the resume which can be converted to PDF"
+            }
+        },
+        required: ["html"]
+    }
 
     const prompt = `Generate resume for a candidate with the following details:
                         Resume: ${resume}
@@ -100,7 +161,7 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(resumePdfSchema),
+            responseSchema: resumePdfSchema,
         }
     })
 
