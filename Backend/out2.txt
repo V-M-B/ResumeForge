@@ -1,0 +1,2 @@
+Register Res: 201 {"message":"User registered successfully","user":{"id":"69cc6da5644a53b4ab623fdd","username":"testuser3","email":"test3@example.com"}}
+Login Res: 200 {"message":"User loggedIn successfully.","user":{"id":"69cc6da5644a53b4ab623fdd","username":"testuser3","email":"test3@example.com"}}

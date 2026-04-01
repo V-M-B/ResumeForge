@@ -10,10 +10,12 @@ const Login = () => {
 
         const [email, setEmail] = useState('')
         const [password, setPassword] = useState('')
+        const [errorMsg, setErrorMsg] = useState('')
 
 
         const onhandleSubmit = async (e) => {
             e.preventDefault()
+            setErrorMsg('')
 
             try {
                 await handleLogin({ email, password })
@@ -21,6 +23,7 @@ const Login = () => {
             } catch (err) {
                 // Handle login errors here (toast, error display, etc.)
                 console.error('Login failed', err)
+                setErrorMsg(err?.response?.data?.message || 'Invalid email or password')
             }
         }
 
@@ -37,6 +40,8 @@ const Login = () => {
             <main>
                 <div className="form-container">
                     <h1>Login</h1>
+                    
+                    {errorMsg && <div className="error-message" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{errorMsg}</div>}
 
                     <form onSubmit={onhandleSubmit}>
                         <div className="input-group">

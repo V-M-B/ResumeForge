@@ -8,7 +8,7 @@ const Home = () => {
     const [selfDescription, setSelfDescription] = useState('')
     const [resumeFile, setResumeFile] = useState(null)
     const resumeInputRef = useRef(null)
-    const { generateReport, loading } = useInterview()
+    const { generateReport, loading, reports } = useInterview()
     const navigate = useNavigate()
 
     const handleFileChange = (e) => {
@@ -24,7 +24,8 @@ const Home = () => {
     }
 
     const handleGenerateReport = async () => {
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+
         if (data) {
             navigate(`/interview/${data._id}`)
         }
@@ -175,6 +176,26 @@ const Home = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Recent REPORT lIST */}
+            {reports && reports.length > 0 && (
+                <div className='recent-reports'>
+                    <h2>Recent Reports</h2>
+                    <ul>
+                        {reports.map(report => (
+                            <li key={report._id}>
+                                <a href={`/interview/${report._id}`}>{report.title}</a>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+
+
+
+
+
             {/* Page Footer */}
             <footer className='page-footer'>
                 <a href='#'>Privacy Policy</a>
