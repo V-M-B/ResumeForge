@@ -9,7 +9,7 @@ app.use(cookieParser())
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://prep.vmb.indevs.in"
+        "https://resumeforge.vmb.indevs.in"
     ],
     credentials: true
 }))
