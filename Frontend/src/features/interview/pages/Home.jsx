@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import '../style/home.scss'
 import { useInterview } from '../hooks/useInterview'
 import { useNavigate } from 'react-router'
@@ -8,8 +8,12 @@ const Home = () => {
     const [selfDescription, setSelfDescription] = useState('')
     const [resumeFile, setResumeFile] = useState(null)
     const resumeInputRef = useRef(null)
-    const { generateReport, loading, reports } = useInterview()
+    const { generateReport, loading, reports, getReports } = useInterview()
     const navigate = useNavigate()
+
+    useEffect(() => {
+        getReports()
+    }, [])
 
     const handleFileChange = (e) => {
         const file = e.target.files[0]
@@ -180,14 +184,42 @@ const Home = () => {
             {/* Recent REPORT lIST */}
             {reports && reports.length > 0 && (
                 <div className='recent-reports'>
-                    <h2>Recent Reports</h2>
-                    <ul>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                        <h2 style={{ fontSize: '1.2rem', fontWeight: '700', color: '#e6edf3', margin: 0 }}>Recent Reports</h2>
+                        <span style={{ fontSize: '0.75rem', color: '#7d8590', background: '#1c2230', padding: '0.15rem 0.6rem', borderRadius: '2rem', border: '1px solid #2a3348' }}>{reports.length} generated</span>
+                    </div>
+                    
+                    <div className='reports-list'>
                         {reports.map(report => (
-                            <li key={report._id}>
-                                <a href={`/interview/${report._id}`}>{report.title}</a>
-                            </li>
+                            <div 
+                                key={report._id} 
+                                className='report-item' 
+                                onClick={() => navigate(`/interview/${report._id}`)}
+                                style={{ minWidth: '280px', transition: 'border-color 0.2s', ':hover': { borderColor: '#4a5568'} }}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                                    <h3 style={{ margin: 0, fontSize: '1rem', color: '#e6edf3', fontWeight: '600', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                        {report.title}
+                                    </h3>
+                                    <span style={{ fontSize: '0.75rem', color: '#7d8590', whiteSpace: 'nowrap', marginTop: '0.2rem' }}>
+                                        {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </span>
+                                </div>
+                                
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #2a3348' }}>
+                                    <div className='match-score' style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                                        {report.matchScore}% Match
+                                    </div>
+                                    <div style={{ flex: 1 }}></div>
+                                    <span style={{ fontSize: '0.75rem', color: '#ff2d78', display: 'flex', alignItems: 'center', gap: '0.2rem', fontWeight: '600', opacity: 0.9 }}>
+                                        View Strategy
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </span>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 </div>
             )}
 
