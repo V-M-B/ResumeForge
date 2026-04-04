@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import '../style/home.scss'
 import { useInterview } from '../hooks/useInterview'
 import { useNavigate } from 'react-router'
+import { useAuth } from '../../auth/hooks/use.auth'
 
 const Home = () => {
     const [jobDescription, setJobDescription] = useState('')
@@ -10,6 +11,7 @@ const Home = () => {
     const resumeInputRef = useRef(null)
     const { generateReport, loading, reports, getReports } = useInterview()
     const navigate = useNavigate()
+    const { handleLogout } = useAuth()
 
     useEffect(() => {
         getReports()
@@ -73,6 +75,14 @@ const Home = () => {
             <div className='abg-orb abg-orb--1' />
             <div className='abg-orb abg-orb--2' />
             <div className='abg-orb abg-orb--3' />
+
+            {/* Top Bar for Logout */}
+            <div className='top-bar'>
+                <button className='logout-btn' onClick={handleLogout} disabled={loading}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Logout
+                </button>
+            </div>
 
             {/* Page Header */}
             <header className='page-header'>
