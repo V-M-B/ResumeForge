@@ -71,11 +71,6 @@ const Home = () => {
                 </div>
             )}
 
-            {/* Animated Background Orbs */}
-            <div className='abg-orb abg-orb--1' />
-            <div className='abg-orb abg-orb--2' />
-            <div className='abg-orb abg-orb--3' />
-
             {/* Top Bar for Logout */}
             <div className='top-bar'>
                 <button className='logout-btn' onClick={handleLogout} disabled={loading}>

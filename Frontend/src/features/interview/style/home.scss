@@ -1,72 +1,20 @@
 @use "sass:color";
 
-// ── Variables ────────────────────────────────────────────────────────────────
-$bg-page: #0d1117;
-$bg-card: #161b22;
-$bg-panel: #1c2230;
-$bg-input: #1e2535;
-$border-color: #2a3348;
-$text-primary: #e6edf3;
-$text-muted: #7d8590;
-$accent: #ff2d78;
-$accent-alt: #ff6b9d;
-$badge-required: #ff2d78;
-$badge-best: #ff2d78;
-$info-bg: #1b2a4a;
-$info-border: #2d4a7a;
+// ── Variables (Unified Minimal Dark Theme) ──────────────────────────────────
+$bg-page: #09090b; // Zinc-950
+$bg-card: #18181b; // Zinc-900
+$bg-panel: #18181b; // Zinc-900
+$bg-input: #27272a; // Zinc-800
+$border-color: #3f3f46; // Zinc-700
+$text-primary: #fafafa; // Zinc-50
+$text-muted: #a1a1aa; // Zinc-400
+$accent: #8b5cf6; // Vivid Violet
+$accent-alt: #a78bfa; // Violet-400
+$badge-required: #8b5cf6;
+$badge-best: #8b5cf6;
+$info-bg: rgba(#8b5cf6, 0.1);
+$info-border: rgba(#8b5cf6, 0.2);
 $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-// ── Animated Background Keyframes ────────────────────────────────────────────
-@keyframes orb-drift-a {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    33% {
-        transform: translate(60px, -40px) scale(1.08);
-    }
-
-    66% {
-        transform: translate(-40px, 30px) scale(0.96);
-    }
-
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-}
-
-@keyframes orb-drift-b {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    33% {
-        transform: translate(-50px, 50px) scale(1.06);
-    }
-
-    66% {
-        transform: translate(40px, -30px) scale(0.98);
-    }
-
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-}
-
-@keyframes orb-drift-c {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(30px, 60px) scale(1.04);
-    }
-
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-}
-
 // ── Page Shell ───────────────────────────────────────────────────────────────
 
 
@@ -86,22 +34,6 @@ $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, s
     padding: 3rem 1.5rem;
     gap: 2rem;
 
-    // ── Animated orb layer ───────────────────────────────────────────────────
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-
-        // Two blended radial orbs via SVG-style approach using box-shadow
-        background:
-            radial-gradient(ellipse 55% 40% at 15% 20%, rgba($accent, 0.18) 0%, transparent 70%),
-            radial-gradient(ellipse 40% 50% at 82% 75%, rgba($accent, 0.14) 0%, transparent 70%),
-            radial-gradient(ellipse 30% 30% at 60% 10%, rgba(#7b2fff, 0.10) 0%, transparent 70%);
-        animation: orb-drift-a 18s ease-in-out infinite;
-    }
-
     // ── Dot-grid mesh ────────────────────────────────────────────────────────
     &::after {
         content: '';
@@ -118,42 +50,6 @@ $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, s
     >* {
         position: relative;
         z-index: 1;
-    }
-}
-
-// ── Floating orb elements (extra depth) ──────────────────────────────────────
-.abg-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(70px);
-    pointer-events: none;
-    z-index: 0;
-
-    &--1 {
-        width: 420px;
-        height: 420px;
-        background: radial-gradient(circle, rgba($accent, 0.22) 0%, transparent 70%);
-        top: -100px;
-        left: -120px;
-        animation: orb-drift-a 20s ease-in-out infinite;
-    }
-
-    &--2 {
-        width: 340px;
-        height: 340px;
-        background: radial-gradient(circle, rgba(#7b2fff, 0.18) 0%, transparent 70%);
-        bottom: -80px;
-        right: -100px;
-        animation: orb-drift-b 24s ease-in-out infinite;
-    }
-
-    &--3 {
-        width: 220px;
-        height: 220px;
-        background: radial-gradient(circle, rgba($accent, 0.12) 0%, transparent 70%);
-        top: 50%;
-        right: 15%;
-        animation: orb-drift-c 16s ease-in-out infinite;
     }
 }
 
