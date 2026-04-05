@@ -23,6 +23,10 @@ const interviewRouter = require("./routes/interview.routes")
 app.use("/api/auth", authRouter)
 app.use("/api/interview", interviewRouter)
 
+// Health check endpoint to prevent Render from sleeping
+app.get('/ping', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Server is awake' });
+});
 
 
 module.exports = app
