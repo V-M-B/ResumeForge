@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, Navigate } from 'react-router'
 import '../auth.form.scss'
 import { useAuth } from '../hooks/use.auth.js'
 import { useNavigate } from 'react-router'
+import Loader from '../../../components/Loader/Loader'
 
 const Login = () => {
     const navigate = useNavigate()
-    const { loading, handleLogin } = useAuth()
+    const { loading, user, handleLogin } = useAuth()
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -26,11 +27,12 @@ const Login = () => {
     }
 
     if (loading) {
-        return (
-            <main className="loader-container">
-                <div className="loader"></div>
-            </main>
-        )
+        return <Loader text="Authenticating..." />
+    }
+
+    // Already logged in — redirect to home
+    if (user) {
+        return <Navigate to="/" />
     }
 
     return (

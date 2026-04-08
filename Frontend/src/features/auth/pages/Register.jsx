@@ -1,8 +1,9 @@
 import React from 'react'
-import { useNavigate, Link } from 'react-router'
+import { useNavigate, Link, Navigate } from 'react-router'
 import '../auth.form.scss'
 import { useState } from 'react'
 import { useAuth } from '../hooks/use.auth'
+import Loader from '../../../components/Loader/Loader'
 
 
 const Register = () => {
@@ -11,7 +12,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const { loading, handleRegister } = useAuth();
+    const { loading, user, handleRegister } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,7 +20,14 @@ const Register = () => {
         navigate('/')
     }
 
+    if (loading) {
+        return <Loader text="Loading..." />
+    }
 
+    // Already logged in — redirect to home
+    if (user) {
+        return <Navigate to="/" />
+    }
     return (
         <main className="auth-page">
             {/* Left Branding Panel */}
